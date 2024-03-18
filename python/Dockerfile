@@ -10,7 +10,7 @@ RUN curl -s https://raw.githubusercontent.com/SwissDataScienceCenter/renkulab-do
 # RENKU_VERSION determines the version of the renku CLI
 # that will be used in this image. To find the latest version,
 # visit https://pypi.org/project/renku/#history.
-ARG RENKU_VERSION=2.3.2
+ARG RENKU_VERSION=2.6.0
 
 # Install renku from pypi or from github if a dev version
 RUN if [ -n "$RENKU_VERSION" ] ; then \
@@ -47,7 +47,14 @@ RUN apt-get update && \
    texlive-latex-extra \
    texlive-fonts-extra \
    texlive-lang-all \
-   tex-gyre
+   tex-gyre \
+   nano \
+   git
+RUN pip install --no-cache-dir git+install git+https://github.com/aletell/eppy.git@master
+RUN wget -q https://github.com/NREL/EnergyPlus/releases/download/v9.4.0/EnergyPlus-9.4.0-998c4b761e-Linux-Ubuntu18.04-x86_64.sh \
+    && chmod +x EnergyPlus-9.4.0-998c4b761e-Linux-Ubuntu18.04-x86_64.sh \
+    && echo 'y' | ./EnergyPlus-9.4.0-998c4b761e-Linux-Ubuntu18.04-x86_64.sh -f -d /usr/local/EnergyPlus-9-4-0
+ENV ENERGYPLUS_DIR /usr/local/EnergyPlus-9-4-0
 USER ${NB_USER}
 
 # install the python dependencies
